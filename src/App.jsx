@@ -13,7 +13,10 @@ function App() {
       fullName: "Mike Wozowski",
       directReports: [
         { fullName: "sully", directReports: [] },
-        { fullName: "heather", directReports: [{ fullName: "graydon", directReports: [] }] },
+        {
+          fullName: "heather",
+          directReports: [{ fullName: "graydon", directReports: [] }],
+        },
       ],
     },
   ];
@@ -21,7 +24,7 @@ function App() {
   const establishRoot = function () {
     const root = employees[0];
     const directReports = employees[0].directReports;
-    
+
     if (root) {
       return (
         <>
@@ -34,76 +37,75 @@ function App() {
             whileTap={{
               scale: 0.8,
             }}
-            >{root.fullName}</motion.div>
-            
+          >
+            {root.fullName}
+          </motion.div>
         </>
       );
     }
   };
-  
-  const buildTree = function(node){
 
+  const buildTree = function (node) {
+    console.log("node: " + node.fullName)
     const directReports = node.directReports;
-    if (directReports){
-      for(let i = 0; i < directReports.length; i++){
-        buildTree(directReports[i])
-      }
-      return(
+    if (directReports) {
+      return (
         <motion.div
-        id={node.fullName + "'s Direct Reports"}
-        className="card"
-        drag
-        dragConstraints={constraintsRef}
-        whileHover={{ scale: 1.2 }}
-        whileTap={{
-          scale: 0.8,
-        }}
+          id={node.fullName + "'s Direct Reports"}
+          className="card"
+          drag
+          dragConstraints={constraintsRef}
+          whileHover={{ scale: 1.2 }}
+          whileTap={{
+            scale: 0.8,
+          }}
         >
-      {    directReports.map((report) => {
-          // buildTree(directReports[0])
+          {directReports.map((report) => {
+            // buildTree(directReports[0])
+            if (report.directReports.length > 0) {
+              buildTree(report);
+            }
 
-         return (
-          <div className="label" key={report.fullName}>
-            {report.fullName}
-
-          </div>
-
-         ) })}
-
+            return (
+              <div className="label" key={report.fullName}>
+                {report.fullName}
+              </div>
+            );
+          })}
         </motion.div>
-        )
+      );
     }
-  }
-  const drawLines = function(node){
+  };
+  const drawLines = function (node) {
     if (node) {
-      drawLines(node.directReports)
+      drawLines(node.directReports);
       return (
         <Arrow
-        className="arrow"
-        from={{
-          direction: DIRECTION.BOTTOM,
-          node: () => document.getElementById(`${node.fullName}`),
-          translation: [0, 1],
-        }}
-        to={{
-          direction: DIRECTION.TOP,
-          node: () => document.getElementById(`${node.fullName}'s Direct Reports`),
-          translation: [0, -1],
-        }}
-        // onChange={...}
-      />
-      )
+          className="arrow"
+          from={{
+            direction: DIRECTION.BOTTOM,
+            node: () => document.getElementById(`${node.fullName}`),
+            translation: [0, 1],
+          }}
+          to={{
+            direction: DIRECTION.TOP,
+            node: () =>
+              document.getElementById(`${node.fullName}'s Direct Reports`),
+            translation: [0, -1],
+          }}
+          // onChange={...}
+        />
+      );
     }
-  }
+  };
 
   return (
     <>
-    <motion.div className="container" ref={constraintsRef}>
-
-    {establishRoot()}
-    {buildTree(employees[0])}
-    {drawLines(employees[0])}
-    </motion.div>
+      <motion.div className="container" ref={constraintsRef}>
+        {establishRoot()}
+        {buildTree(employees[0])}
+        {drawLines(employees[0])}
+      </motion.div>
       {/* <Arrow
         className="arrow"
         from={{
